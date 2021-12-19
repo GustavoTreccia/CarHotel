@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -27,20 +28,10 @@ public class CarReg implements Serializable{
 	private Date dataEntrada;
 	private Date dataSaida;
 	
-	public CarReg() {}
+	@OneToOne(mappedBy = "carreg")
+	private Vaga vaga;
 
-	public CarReg(Long id, String marca, String modelo, String tipo, String placa, String apelidoProprietario,
-			Date dataEntrada, Date dataSaida) {
-		super();
-		this.id = id;
-		this.marca = marca;
-		this.modelo = modelo;
-		this.tipo = tipo;
-		this.placa = placa;
-		this.apelidoProprietario = apelidoProprietario;
-		this.dataEntrada = dataEntrada;
-		this.dataSaida = dataSaida;
-	}
+	public CarReg() {}
 
 	public Long getId() {
 		return id;
@@ -106,6 +97,10 @@ public class CarReg implements Serializable{
 		this.dataSaida = dataSaida;
 	}
 
+	public Vaga getVaga() {
+		return vaga;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -118,6 +113,7 @@ public class CarReg implements Serializable{
 		result = prime * result + ((modelo == null) ? 0 : modelo.hashCode());
 		result = prime * result + ((placa == null) ? 0 : placa.hashCode());
 		result = prime * result + ((tipo == null) ? 0 : tipo.hashCode());
+		result = prime * result + ((vaga == null) ? 0 : vaga.hashCode());
 		return result;
 	}
 
@@ -170,6 +166,11 @@ public class CarReg implements Serializable{
 				return false;
 		} else if (!tipo.equals(other.tipo))
 			return false;
+		if (vaga == null) {
+			if (other.vaga != null)
+				return false;
+		} else if (!vaga.equals(other.vaga))
+			return false;
 		return true;
 	}
 
@@ -177,8 +178,14 @@ public class CarReg implements Serializable{
 	public String toString() {
 		return "CarReg [id=" + id + ", marca=" + marca + ", modelo=" + modelo + ", tipo=" + tipo + ", placa=" + placa
 				+ ", apelidoProprietario=" + apelidoProprietario + ", dataEntrada=" + dataEntrada + ", dataSaida="
-				+ dataSaida + "]";
+				+ dataSaida + ", vaga=" + vaga + "]";
 	}
+	
+	
+
+	
+	
+	
 	
 	
 	

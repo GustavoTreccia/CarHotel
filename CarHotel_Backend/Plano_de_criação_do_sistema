@@ -1,0 +1,82 @@
+CarHotel (Sério, escolha um nome melhor)
+
+Não tem mistério, é um sistema de hotel para carros.
+
+Ok, mas como vai funcionar? Teoricamente simples.
+
+ENTIDADES:
+Carro:
+	- Deve ser coletado: 
+		> Marca [STRING 50] : Fiat, Chevrolet, etc...
+		> Tipo [STRING 50] : SUV, Sedan, Pickup, etc...
+		> Modelo [STRING 50] : Uno, Fox, Polo, etc... 
+		> Placa [STRING 8] : Pode-se utilizar o modelo antigo (ABC-1234) ou modelo novo (ABC1D23) 
+			[Precisa de booleano para marcar se é placa antiga ou placa nova?][Acho que não... Depende do banco na real]
+			
+		> Apelido do proprietario [STRING 100] : Um apelido para achar fácil o carro da pessoa (Exemplo: Fulaninho)
+			[Tem algum impacto se o apelido for ofensivo?][E eu sei lá, porra, se a pessoa registrou assim problema dela]
+			
+		> [Função do funcionário] Data de entrada [DATE]: Vamos manter essa data no Brasil, portanto, modelo: DD/MM/AAAA
+		> [Função do funcionário] Data de saída [DATE]: Mesmo esquema de cima, DD/MM/AAAA
+		
+	- Como vai ficar no banco?
+		{TABELA DEVE COMEÇAR VAZIA E IR SENDO POPULADA COM BASE NO USO DO SISTEMA}
+		CREATE TABLE CARRO (
+			ID LONG NOT NULL PRIMARY KEY,
+    		MARCA VARCHAR(50),
+    		MODELO VARCHAR(50) NOT NULL,
+    		TIPO VARCHAR(50),
+    		PLACA VARCHAR(8) NOT NULL,
+    		APELIDO VARCHAR(100),
+    		DTENTRADA DATE NOT NULL,
+    		DTSAIDA DATE NOT NULL
+		);
+		
+		
+Vaga:
+	- Deve ser registrado pelo funcionário:
+		> ID
+		> Nome : Nome da vaga
+		> Bloco : Bloco em que a vaga se encontra, exemplo: Bloco A, Bloco B, etc...
+		> Ocupado : Booleano para ver se a vaga está ocupada ou não
+		> IDCarro : Ocorre apenas se [Ocupado] estive em SIM, caso contrário esse cara fica nulo
+	
+	- Como vai ficar no banco?
+		{TABELA DEVE COMEÇAR VAZIA, ADMINISTRADOR IRÁ POPULAR}
+		CREATE TABLE VAGA (
+			ID LONG NOT NULL PRIMARY KEY,
+			NOME VARCHAR(4) NOT NULL,
+    		BLOCO VARCHAR(2)  NOT NULL,
+   			OCUPADA BOOLEAN
+   			IDCARRO BIGINT(100) NOT NULL,
+    		FOREIGN KEY (IDCARRO) REFERENCES CARRO(ID)
+		);
+		
+[Vamos usar Postgresql? Sim, e banco de testes H2, coisa básica]
+
+FUNÇÕES:
+	(Preparação) - Adicionar vagas:
+		> Deve-se adicionar uma ou várias vagas 
+		> Cada vaga pode ter APENAS UM CARRO, o mesmo vale para que carro tenha APENAS UMA VAGA
+		> Administrador define o número de vagas
+		
+	- Adicionar blocos:
+		> Deve-se adicionar um ou vários blocos
+		> Mesmo esquema das vagas
+		> Administrador define o número de blocos
+		
+	(Discussão)
+		
+		[Tais vagas são acrescentadas automaticamente? SIM!][Como? Se demarcar a partir de A000 e segue para A001 em diante... | Usa normalmente, 000 para frente, ninguém tem um hotel para mais de 1000 carros ( -_-)]
+		[Mesmo esquema dos blocos, ninguém tem espaço para todas as letras do alfabeto em blocos, reduz o tamanho de bloco para um, máximo dois...]
+		[Tá estranho isso, como o administrador vai marcar quantas vagas tem? Como vamos persistir isso?]
+		[Teria que criar outra tabela no banco, uma tabela fixa por exemplo][Nada disso, pode fazer a tabela vagas e blocos separadas, as vagas adicionadas serão adicionadas ao banco. Ambas as tabelas começam vazias, o administrador que irá popular elas.]
+		[Rapaz... Boa ideia, marca isso separado]
+		[E sobre os carros? | Tabela vazia também, porém ela vai ser populada durante os registros. | Calma lá cowboy, como? Se não pode tirar o carro se ele está linkado com uma vaga? | Não não, a vaga está linkada a um carro, o carro pode entrar em sair normalmente]
+		[Entendi...][Além disso, a tabela de carros é a que mais vai ter inserção e deleção, então cuidado com os inserts e deletes!]
+		
+	(Discussão)
+	
+	(Registro) - Registrar carro:
+		> Deve-se registrar o carro usando sua placa, modelo, marca, tipo, etc...
+		> O apelido do dono deve ser utilizado para identificação
